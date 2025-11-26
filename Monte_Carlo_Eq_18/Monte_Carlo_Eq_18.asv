@@ -1,0 +1,27 @@
+clear all
+close all
+clc
+rng('default')
+addpath(genpath('Utils'))
+%% 
+n = 176;
+N_MC = 5;
+U = randn([n,n,N_MC]);
+U = max(0,U);
+%%
+Sig = [0.05,0.04,0.03,0.02,0.01,0.001,0.0001,1e-5,1e-6,1e-7,1e-8];
+j = 1;
+E = zeros(N_MC,length(Sig));
+for sig = Sig
+for i = 1:N_MC
+U_den = Image_LASSC_Denoising_Erfan...
+ (U(:,:,i),U(:,:,i),sig);
+E(i,j) = norm(U_den-U(:,:,i));
+end
+j = j+1;
+end
+%% 
+figure,
+plot(Sig,max(E,[],1),LineWidth=3)
+xlabel('\sigma')
+ylabel('max_u ||H_\sigma(u) - u||_2')
